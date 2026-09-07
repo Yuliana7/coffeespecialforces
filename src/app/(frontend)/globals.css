@@ -1,0 +1,85 @@
+@import 'tailwindcss';
+
+/*
+ * Palette taken from the logo badge: Ukrainian flag blue and yellow, the olive
+ * of the emblem, and a warm paper white. Change these six values and the whole
+ * site re-skins — nothing below hardcodes a colour.
+ */
+@theme {
+  --color-ink: #12161c;
+  --color-ink-muted: #5b6472;
+  --color-paper: #faf8f5;
+  --color-surface: #ffffff;
+  --color-line: #e6e1d9;
+  --color-olive: #4a5240;
+  --color-olive-deep: #333a2c;
+  --color-blue: #0b5fbf;
+  --color-gold: #ffd400;
+
+  --font-display: var(--font-oswald), 'Arial Narrow', sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* Visible keyboard focus everywhere, since the default is removed by resets. */
+  :focus-visible {
+    outline: 3px solid var(--color-blue);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Long-form content coming out of the Lexical editor. */
+  .prose-body :where(p, ul, ol) {
+    margin-block: 1rem;
+    line-height: 1.75;
+  }
+  .prose-body :where(h2) {
+    margin-block: 2rem 0.75rem;
+    font-size: 1.75rem;
+  }
+  .prose-body :where(h3) {
+    margin-block: 1.5rem 0.5rem;
+    font-size: 1.35rem;
+  }
+  .prose-body :where(ul) {
+    list-style: disc;
+    padding-left: 1.5rem;
+  }
+  .prose-body :where(ol) {
+    list-style: decimal;
+    padding-left: 1.5rem;
+  }
+  .prose-body :where(a) {
+    color: var(--color-blue);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-body :where(blockquote) {
+    border-left: 4px solid var(--color-gold);
+    padding-left: 1rem;
+    font-style: italic;
+    margin-block: 1.5rem;
+  }
+}
