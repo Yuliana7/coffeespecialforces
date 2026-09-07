@@ -1,23 +1,20 @@
-# Coffee Special Forces — Scaffold
+# Coffee Special Forces — Auth (Google SSO)
 
-This scaffold adds a minimal Next.js + TypeScript app with Tailwind and Prisma (SQLite) to bootstrap the Coffee Special Forces website.
+This branch implements Google SSO using NextAuth and enforces an allowlist in the database to restrict admin access.
 
-Included:
-- Next.js (App Router) + TypeScript
-- Tailwind CSS configuration
-- Prisma schema + seed (SQLite)
-- Basic pages: home, work-areas, foundation, locations, admin stub
-- i18n: en, uk
-- Cloudflare R2 placeholders in .env.example
-- A script to download the provided logo into public/assets/logo.jpg
-- Assistant memory file at .assistant_memory.md for context persistence
+Setup steps (local):
+1. Add the following env variables to .env:
+   - GOOGLE_CLIENT_ID
+   - GOOGLE_CLIENT_SECRET
+   - NEXTAUTH_URL (e.g. http://localhost:3000)
+   - NEXTAUTH_SECRET (strong random value)
+2. Generate Prisma client: npx prisma generate
+3. Run migrations (if you want) or prisma db push to update schema: npx prisma db push
+4. Seed the DB (if needed): npx ts-node prisma/seed.ts
 
-Getting started (local):
-1. Copy .env.example to .env and set values (DATABASE_URL defaults to SQLite dev.db)
-2. Install deps: npm install
-3. Generate Prisma client: npx prisma generate
-4. Run seed: npx ts-node prisma/seed.ts
-5. Run dev server: npm run dev
+How allowlist works:
+- Only users that already exist in the `User` table (created via seed or invite flow) will be allowed to sign in via Google SSO. This prevents arbitrary Google accounts from gaining access.
 
-Images: this scaffold is configured to use Cloudflare R2 as the default storage provider. See the README section on Cloudflare R2 for setup notes.
-
+Next steps:
+- Implement invite flow to add new admin emails to the DB.
+- Consider adding 2FA or stricter session rules for sensitive actions.
