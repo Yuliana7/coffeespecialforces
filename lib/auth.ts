@@ -1,5 +1,7 @@
-// auth stub - integrate NextAuth in future
-export const requireAdmin = async (request: Request) => {
-  // placeholder for middleware to check session
-  return false
+// auth helpers
+import { getServerSession as nextAuthGetServerSession } from 'next-auth/next'
+import { authOptions } from './authOptions'
+
+export const getServerSession = (req: any, res: any) => {
+  return nextAuthGetServerSession(req, res, authOptions)
 }
