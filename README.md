@@ -94,12 +94,21 @@ a warm off-white. All six colours are CSS variables at the top of
 
 ## Deployment
 
-Not set up yet. Two things to know when you get there:
+Not set up yet. The short version — `CLAUDE.md` has the full reasoning:
 
 - `NEXT_PUBLIC_SERVER_URL` must exactly match the public origin, or the admin panel
   will reject every save.
-- SQLite needs a persistent disk, as does `public/media`. That rules out serverless
-  hosts like Vercel without switching to Postgres and object storage first.
+- Schema auto-push is **development only**. In production Payload expects
+  migrations, so the deploy has to run `pnpm payload migrate:create` once locally,
+  with `pnpm payload migrate` in the start command.
+- SQLite needs a persistent disk, as does `public/media`. The simplest fix is a host
+  that gives you one (Railway, Fly, any VPS). Going serverless does **not** require
+  Postgres: the adapter is libsql, so pointing `DATABASE_URI` at a hosted
+  libsql/Turso URL keeps the same adapter and schema. Uploads would still need to
+  move to object storage via `@payloadcms/storage-s3`.
+- That disk also means **one instance only** — no replicas, and a few seconds of
+  downtime on each redeploy. Fine at this scale, but it is the constraint to
+  remember if the site ever needs to scale out.
 
 ## Not built yet
 
