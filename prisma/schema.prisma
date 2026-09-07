@@ -1,0 +1,82 @@
+/**
+ * Prisma schema for initial data models (SQLite for dev)
+ */
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Location {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  name      String
+  address   String?
+  coords    String?
+  description String?
+  projects  Project[]
+  events    Event[]
+}
+
+model Project {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  status    String
+  startDate DateTime?
+  endDate   DateTime?
+  location  Location? @relation(fields: [locationId], references: [id])
+  locationId Int?
+  translations ProjectTranslation[]
+  images    String[] @default([])
+}
+
+model ProjectTranslation {
+  id        Int    @id @default(autoincrement())
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId Int
+  locale    String
+  title     String
+  summary   String?
+  content   String?
+}
+
+model Event {
+  id        Int    @id @default(autoincrement())
+  slug      String @unique
+  title     String
+  summary   String?
+  content   String?
+  dateTime  DateTime
+  location  Location? @relation(fields: [locationId], references: [id])
+  locationId Int?
+  images    String[] @default([])
+}
+
+model WorkArea {
+  id     Int    @id @default(autoincrement())
+  slug   String @unique
+  title  String
+  description String?
+  order  Int @default(0)
+}
+
+model Report {
+  id        Int @id @default(autoincrement())
+  year      Int
+  type      String
+  fileUrl   String
+  publishedAt DateTime
+  description String?
+}
+
+model User {
+  id    Int @id @default(autoincrement())
+  email String @unique
+  name  String?
+  role  String @default("editor")
+  passwordHash String?
+}
