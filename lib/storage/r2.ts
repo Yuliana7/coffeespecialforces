@@ -7,7 +7,6 @@ const R2_ACCESS_KEY = process.env.CLOUDFLARE_R2_ACCESS_KEY_ID
 const R2_SECRET = process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
 
 if (!R2_ACCOUNT || !R2_BUCKET || !R2_ACCESS_KEY || !R2_SECRET) {
-  // do not throw in build-time; just warn
   console.warn('R2 env vars not set: CLOUDFLARE_R2_*')
 }
 

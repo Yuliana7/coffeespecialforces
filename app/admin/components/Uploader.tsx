@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 
-export default function Uploader({ entity, entityId }: { entity: string; entityId: string }) {
+export default function Uploader({ entity, entityId, onComplete }: { entity: string; entityId: string; onComplete?: (url: string) => void }) {
   const [file, setFile] = useState<File | null>(null)
   const [progress, setProgress] = useState<number>(0)
   const [message, setMessage] = useState<string>('')
+  const controllerRef = useRef<AbortController | null>(null)
 
   const handleFile = (f: File | null) => {
     setFile(f)
@@ -36,21 +37,32 @@ export default function Uploader({ entity, entityId }: { entity: string; entityI
     const { signedUrl, publicUrl } = data
 
     setMessage('Uploading...')
-    const putResp = await fetch(signedUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type },
-      body: file
-    })
 
-    if (!putResp.ok) {
+    // Use XMLHttpRequest so we can report progress reliably
+    await new Promise<void>((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open('PUT', signedUrl)
+      xhr.setRequestHeader('Content-Type', file.type)
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          setProgress(Math.round((e.loaded / e.total) * 100))
+        }
+      }
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) resolve()
+        else reject(new Error('Upload failed'))
+      }
+      xhr.onerror = () => reject(new Error('Upload failed'))
+      xhr.send(file)
+    }).catch((err) => {
       setMessage('Upload failed')
+      console.error(err)
       return
-    }
+    })
 
     setProgress(100)
     setMessage('Upload complete, saving reference...')
 
-    // tell server to attach url to entity
     const completeResp = await fetch('/api/uploads/complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -62,6 +74,7 @@ export default function Uploader({ entity, entityId }: { entity: string; entityI
       return
     }
     setMessage('File attached successfully')
+    if (onComplete) onComplete(publicUrl)
   }
 
   return (

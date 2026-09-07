@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
       const id = parseInt(entityId, 10)
       const loc = await prisma.location.findUnique({ where: { id } })
       if (!loc) return NextResponse.json({ error: 'Location not found' }, { status: 404 })
+      // For locations, we won't alter DB automatically; return ok for manual handling
       return NextResponse.json({ ok: true })
     }
 
