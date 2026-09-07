@@ -1,45 +1,49 @@
-import { notFound } from 'next/navigation'
+import { notFound } from "next/navigation";
 
-import { Container } from '../../../../components/Container'
-import { EventCard } from '../../../../components/EventCard'
-import { SectionHeading } from '../../../../components/SectionHeading'
-import { getDictionary } from '../../../../lib/dictionary'
-import { isLocale } from '../../../../lib/locales'
-import { getPayloadClient } from '../../../../lib/payload'
+import { Container } from "@/components/Container";
+import { EventCard } from "@/components/EventCard";
+import { SectionHeading } from "@/components/SectionHeading";
+import { getDictionary } from "@/lib/dictionary";
+import { isLocale } from "@/lib/locales";
+import { getPayloadClient } from "@/lib/payload";
 
-export default async function EventsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale: raw } = await params
-  if (!isLocale(raw)) notFound()
-  const locale = raw
-  const t = getDictionary(locale)
+export default async function EventsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: raw } = await params;
+  if (!isLocale(raw)) notFound();
+  const locale = raw;
+  const t = getDictionary(locale);
 
-  const payload = await getPayloadClient()
+  const payload = await getPayloadClient();
 
   // "Upcoming" is relative to the request; the route is force-dynamic, so this
   // is evaluated once per request.
-  const now = new Date().toISOString()
+  const now = new Date().toISOString();
 
   // Let the database do the split, so neither list is capped by the other.
   const [upcoming, past] = await Promise.all([
     payload.find({
-      collection: 'events',
+      collection: "events",
       locale,
       depth: 1,
       limit: 200,
-      sort: 'date',
+      sort: "date",
       where: { date: { greater_than_equal: now } },
     }),
     payload.find({
-      collection: 'events',
+      collection: "events",
       locale,
       depth: 1,
       limit: 200,
-      sort: '-date',
+      sort: "-date",
       where: { date: { less_than: now } },
     }),
-  ])
+  ]);
 
-  const total = upcoming.totalDocs + past.totalDocs
+  const total = upcoming.totalDocs + past.totalDocs;
 
   return (
     <Container className="py-12">
@@ -69,5 +73,5 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
         </section>
       ) : null}
     </Container>
-  )
+  );
 }

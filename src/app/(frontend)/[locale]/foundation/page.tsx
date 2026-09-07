@@ -1,33 +1,39 @@
-import { notFound } from 'next/navigation'
+import { notFound } from "next/navigation";
 
-import { Container } from '../../../../components/Container'
-import { DonateBlock } from '../../../../components/DonateBlock'
-import { RichText } from '../../../../components/RichText'
-import { SectionHeading } from '../../../../components/SectionHeading'
-import { getDictionary } from '../../../../lib/dictionary'
-import { isLocale } from '../../../../lib/locales'
-import { asMedia } from '../../../../lib/media'
-import { getPayloadClient } from '../../../../lib/payload'
+import { Container } from "@/components/Container";
+import { DonateBlock } from "@/components/DonateBlock";
+import { RichText } from "@/components/RichText";
+import { SectionHeading } from "@/components/SectionHeading";
+import { getDictionary } from "@/lib/dictionary";
+import { isLocale } from "@/lib/locales";
+import { asMedia } from "@/lib/media";
+import { getPayloadClient } from "@/lib/payload";
 
-export default async function FoundationPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale: raw } = await params
-  if (!isLocale(raw)) notFound()
-  const locale = raw
-  const t = getDictionary(locale)
+export default async function FoundationPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: raw } = await params;
+  if (!isLocale(raw)) notFound();
+  const locale = raw;
+  const t = getDictionary(locale);
 
-  const payload = await getPayloadClient()
+  const payload = await getPayloadClient();
   const [foundation, donate] = await Promise.all([
-    payload.findGlobal({ slug: 'foundation', locale, depth: 1 }),
-    payload.findGlobal({ slug: 'donate', locale, depth: 0 }),
-  ])
+    payload.findGlobal({ slug: "foundation", locale, depth: 1 }),
+    payload.findGlobal({ slug: "donate", locale, depth: 0 }),
+  ]);
 
-  const reports = [...(foundation.reports ?? [])].sort((a, b) => b.year - a.year)
+  const reports = [...(foundation.reports ?? [])].sort(
+    (a, b) => b.year - a.year,
+  );
 
   const legal: Array<[string, string | null | undefined]> = [
     [t.recipient, foundation.legalName],
     [t.taxId, foundation.registrationNumber],
     [t.address, foundation.legalAddress],
-  ]
+  ];
 
   return (
     <Container className="py-12">
@@ -37,7 +43,7 @@ export default async function FoundationPage({ params }: { params: Promise<{ loc
 
       <div className="mt-8 grid gap-12 lg:grid-cols-[1fr_22rem]">
         <div>
-          <RichText data={foundation.story} />
+          <RichText data={foundation.story} locale={locale} />
 
           <section className="mt-12">
             <SectionHeading>{t.legalDetails}</SectionHeading>
@@ -46,7 +52,9 @@ export default async function FoundationPage({ params }: { params: Promise<{ loc
                 .filter(([, value]) => Boolean(value))
                 .map(([label, value]) => (
                   <div key={label} className="contents">
-                    <dt className="font-bold uppercase tracking-wider text-ink-muted">{label}</dt>
+                    <dt className="font-bold uppercase tracking-wider text-ink-muted">
+                      {label}
+                    </dt>
                     <dd>{value}</dd>
                   </div>
                 ))}
@@ -62,7 +70,9 @@ export default async function FoundationPage({ params }: { params: Promise<{ loc
                     >
                       {foundation.contactEmail}
                     </a>
-                    {foundation.contactPhone ? ` · ${foundation.contactPhone}` : ''}
+                    {foundation.contactPhone
+                      ? ` · ${foundation.contactPhone}`
+                      : ""}
                   </dd>
                 </div>
               ) : null}
@@ -74,7 +84,7 @@ export default async function FoundationPage({ params }: { params: Promise<{ loc
               <SectionHeading>{t.reports}</SectionHeading>
               <ul className="divide-y divide-line border-y border-line">
                 {reports.map((report) => {
-                  const file = asMedia(report.file)
+                  const file = asMedia(report.file);
                   return (
                     <li
                       key={report.id ?? `${report.year}-${report.title}`}
@@ -82,7 +92,9 @@ export default async function FoundationPage({ params }: { params: Promise<{ loc
                     >
                       <span>
                         <span className="font-semibold">{report.title}</span>
-                        <span className="ml-2 text-sm text-ink-muted">{report.year}</span>
+                        <span className="ml-2 text-sm text-ink-muted">
+                          {report.year}
+                        </span>
                       </span>
                       {file?.url ? (
                         <a
@@ -95,7 +107,7 @@ export default async function FoundationPage({ params }: { params: Promise<{ loc
                         </a>
                       ) : null}
                     </li>
-                  )
+                  );
                 })}
               </ul>
             </section>
@@ -107,5 +119,5 @@ export default async function FoundationPage({ params }: { params: Promise<{ loc
         </aside>
       </div>
     </Container>
-  )
+  );
 }

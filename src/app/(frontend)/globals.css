@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /*
  * Palette taken from the logo badge: Ukrainian flag blue and yellow, the olive
@@ -16,7 +16,7 @@
   --color-blue: #0b5fbf;
   --color-gold: #ffd400;
 
-  --font-display: var(--font-oswald), 'Arial Narrow', sans-serif;
+  --font-display: var(--font-oswald), "Arial Narrow", sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 

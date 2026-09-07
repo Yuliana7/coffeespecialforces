@@ -1,37 +1,52 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
+import path from "path";
+import { fileURLToPath } from "url";
 
-import { sqliteAdapter } from '@payloadcms/db-sqlite'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { en } from '@payloadcms/translations/languages/en'
-import { uk } from '@payloadcms/translations/languages/uk'
-import { buildConfig } from 'payload'
-import sharp from 'sharp'
+import { sqliteAdapter } from "@payloadcms/db-sqlite";
+import {
+  lexicalEditor,
+  LinkFeature,
+  RelationshipFeature,
+} from "@payloadcms/richtext-lexical";
+import { en } from "@payloadcms/translations/languages/en";
+import { uk } from "@payloadcms/translations/languages/uk";
+import { buildConfig } from "payload";
+import type { CollectionSlug } from "payload";
+import sharp from "sharp";
 
-import { Events } from './collections/Events'
-import { Locations } from './collections/Locations'
-import { Media } from './collections/Media'
-import { Projects } from './collections/Projects'
-import { Users } from './collections/Users'
-import { WorkAreas } from './collections/WorkAreas'
-import { Donate } from './globals/Donate'
-import { Foundation } from './globals/Foundation'
-import { Home } from './globals/Home'
-import { SiteSettings } from './globals/SiteSettings'
-import { LOCALES, DEFAULT_LOCALE } from './lib/locales'
+import { Events } from "./collections/Events";
+import { Locations } from "./collections/Locations";
+import { Media } from "./collections/Media";
+import { Projects } from "./collections/Projects";
+import { Users } from "./collections/Users";
+import { WorkAreas } from "./collections/WorkAreas";
+import { Donate } from "./globals/Donate";
+import { Foundation } from "./globals/Foundation";
+import { Home } from "./globals/Home";
+import { SiteSettings } from "./globals/SiteSettings";
+import { LOCALES, DEFAULT_LOCALE } from "./lib/locales";
 
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL
-const isProduction = process.env.NODE_ENV === 'production'
+/**
+ * Collections an editor may link to from rich text. `src/components/RichText.tsx`
+ * turns these into URLs; anything added here needs a path there too.
+ */
+const LINKABLE_COLLECTIONS: CollectionSlug[] = [
+  "projects",
+  "events",
+  "work-areas",
+];
+
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL;
+const isProduction = process.env.NODE_ENV === "production";
 
 export default buildConfig({
   admin: {
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
     meta: {
-      titleSuffix: '— Coffee Special Forces',
+      titleSuffix: "— Coffee Special Forces",
     },
   },
 
@@ -39,7 +54,7 @@ export default buildConfig({
   localization: {
     locales: LOCALES.map((code) => ({
       code,
-      label: code === 'uk' ? 'Українська' : 'English',
+      label: code === "uk" ? "Українська" : "English",
     })),
     defaultLocale: DEFAULT_LOCALE,
     fallback: true,
@@ -48,18 +63,32 @@ export default buildConfig({
   // The admin interface itself, so editors can work in Ukrainian.
   i18n: {
     supportedLanguages: { en, uk },
-    fallbackLanguage: 'uk',
+    fallbackLanguage: "uk",
   },
 
   collections: [Projects, Events, WorkAreas, Locations, Media, Users],
   globals: [Home, Foundation, Donate, SiteSettings],
 
-  editor: lexicalEditor(),
-  db: sqliteAdapter({
-    client: { url: process.env.DATABASE_URI || 'file:./coffeesf.db' },
+  /*
+   * The link and relationship features default to every collection, which would
+   * offer editors `users` and `media` as link targets. Restricting them to the
+   * collections that actually have a public page keeps the picker honest — and
+   * `src/components/RichText.tsx` only knows how to build URLs for these.
+   */
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures.filter(
+        (feature) => !["link", "relationship"].includes(feature.key),
+      ),
+      LinkFeature({ enabledCollections: LINKABLE_COLLECTIONS }),
+      RelationshipFeature({ enabledCollections: LINKABLE_COLLECTIONS }),
+    ],
   }),
-  secret: process.env.PAYLOAD_SECRET || '',
-  typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
+  db: sqliteAdapter({
+    client: { url: process.env.DATABASE_URI || "file:./coffeesf.db" },
+  }),
+  secret: process.env.PAYLOAD_SECRET || "",
+  typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },
   /*
    * Payload refuses cookie auth when a request's Origin is missing from its
    * CSRF allowlist, and `serverURL` is added to that list automatically. Pinning
@@ -68,6 +97,8 @@ export default buildConfig({
    * when 3000 is taken. Left unset in development, Payload derives the origin
    * from the request instead; production pins it, where the origin is known.
    */
-  ...(isProduction && serverURL ? { serverURL, cors: [serverURL], csrf: [serverURL] } : {}),
+  ...(isProduction && serverURL
+    ? { serverURL, cors: [serverURL], csrf: [serverURL] }
+    : {}),
   sharp,
-})
+});

@@ -1,14 +1,14 @@
-import Link from 'next/link'
-import type { ReactNode } from 'react'
+import Link from "next/link";
+import type { ReactNode } from "react";
 
 export const SectionHeading = ({
   children,
   href,
   linkLabel,
 }: {
-  children: ReactNode
-  href?: string
-  linkLabel?: string
+  children: ReactNode;
+  href?: string;
+  linkLabel?: string;
 }) => (
   <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-line pb-4">
     <h2 className="text-3xl uppercase sm:text-4xl">{children}</h2>
@@ -21,4 +21,4 @@ export const SectionHeading = ({
       </Link>
     ) : null}
   </div>
-)
+);

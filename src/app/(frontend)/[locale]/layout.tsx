@@ -1,31 +1,31 @@
-import type { Metadata } from 'next'
-import { Inter, Oswald } from 'next/font/google'
-import { notFound } from 'next/navigation'
-import React from 'react'
+import type { Metadata } from "next";
+import { Inter, Oswald } from "next/font/google";
+import { notFound } from "next/navigation";
+import React from "react";
 
-import '../globals.css'
+import "@/app/(frontend)/globals.css";
 
-import { Footer } from '../../../components/Footer'
-import { Header } from '../../../components/Header'
-import { getDictionary } from '../../../lib/dictionary'
-import { isLocale, LOCALES, type Locale } from '../../../lib/locales'
-import { mediaUrl } from '../../../lib/media'
-import { buildNav } from '../../../lib/nav'
-import { getPayloadClient } from '../../../lib/payload'
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { getDictionary } from "@/lib/dictionary";
+import { isLocale, LOCALES, type Locale } from "@/lib/locales";
+import { mediaUrl } from "@/lib/media";
+import { buildNav } from "@/lib/nav";
+import { getPayloadClient } from "@/lib/payload";
 
 // Both faces ship full Cyrillic, which the Ukrainian copy needs.
 const oswald = Oswald({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['500', '700'],
-  variable: '--font-oswald',
-  display: 'swap',
-})
+  subsets: ["latin", "cyrillic"],
+  weight: ["500", "700"],
+  variable: "--font-oswald",
+  display: "swap",
+});
 
 const inter = Inter({
-  subsets: ['latin', 'cyrillic'],
-  variable: '--font-inter',
-  display: 'swap',
-})
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 /*
  * Applies to every page under this layout. Without it Next prerenders the
@@ -33,20 +33,25 @@ const inter = Inter({
  * live site until the next deploy — which defeats the point of the CMS. The
  * database is local, so rendering per request costs effectively nothing.
  */
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
-export const generateStaticParams = async () => LOCALES.map((locale) => ({ locale }))
+export const generateStaticParams = async () =>
+  LOCALES.map((locale) => ({ locale }));
 
 export const generateMetadata = async ({
   params,
 }: {
-  params: Promise<{ locale: string }>
+  params: Promise<{ locale: string }>;
 }): Promise<Metadata> => {
-  const { locale } = await params
-  if (!isLocale(locale)) return {}
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
 
-  const payload = await getPayloadClient()
-  const settings = await payload.findGlobal({ slug: 'site-settings', locale, depth: 0 })
+  const payload = await getPayloadClient();
+  const settings = await payload.findGlobal({
+    slug: "site-settings",
+    locale,
+    depth: 0,
+  });
 
   return {
     title: {
@@ -54,25 +59,29 @@ export const generateMetadata = async ({
       template: `%s — ${settings.siteName}`,
     },
     description: settings.tagline ?? undefined,
-  }
-}
+  };
+};
 
 export default async function LocaleLayout({
   children,
   params,
 }: {
-  children: React.ReactNode
-  params: Promise<{ locale: string }>
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
-  const { locale: raw } = await params
-  if (!isLocale(raw)) notFound()
-  const locale: Locale = raw
+  const { locale: raw } = await params;
+  if (!isLocale(raw)) notFound();
+  const locale: Locale = raw;
 
-  const payload = await getPayloadClient()
-  const settings = await payload.findGlobal({ slug: 'site-settings', locale, depth: 1 })
+  const payload = await getPayloadClient();
+  const settings = await payload.findGlobal({
+    slug: "site-settings",
+    locale,
+    depth: 1,
+  });
 
-  const t = getDictionary(locale)
-  const nav = buildNav(locale)
+  const t = getDictionary(locale);
+  const nav = buildNav(locale);
 
   return (
     <html lang={locale} className={`${oswald.variable} ${inter.variable}`}>
@@ -86,12 +95,12 @@ export default async function LocaleLayout({
         <Header
           locale={locale}
           siteName={settings.siteName}
-          logoUrl={mediaUrl(settings.logo, 'thumbnail') ?? '/logo.jpg'}
+          logoUrl={mediaUrl(settings.logo, "thumbnail") ?? "/logo.jpg"}
           nav={nav}
         />
         <main id="main">{children}</main>
         <Footer locale={locale} settings={settings} nav={nav} />
       </body>
     </html>
-  )
+  );
 }

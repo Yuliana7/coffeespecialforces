@@ -31,7 +31,7 @@ Generate the secret with `openssl rand -base64 32`.
 - Admin — <http://localhost:3000/admin>
 
 `pnpm seed` signs you in with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` from `.env`
-(`admin@coffeesf.local` / `changeme123` by default — **change these**). It is safe to
+(username `admin` / password `changeme123` by default — **change these**). It is safe to
 re-run; it skips anything that already exists.
 
 ### The database
@@ -101,6 +101,14 @@ Not set up yet. The short version — `CLAUDE.md` has the full reasoning:
 - Schema auto-push is **development only**. In production Payload expects
   migrations, so the deploy has to run `pnpm payload migrate:create` once locally,
   with `pnpm payload migrate` in the start command.
+- **Create the admin account as part of the deploy.** Payload shows a "create first
+  user" screen to whoever reaches `/admin` while the users table is empty — there is
+  no invite step, so on a fresh production database that is open to anyone who finds
+  the URL. Run `pnpm seed` (it reads `SEED_ADMIN_USERNAME` / `SEED_ADMIN_PASSWORD`)
+  in the deploy, or at least create the account before sharing the URL.
+- Login is by **username**, not email, and no email adapter is configured — so there
+  is no "forgot password" mail. A locked-out admin is reset by another admin, or from
+  the CLI. Add an email adapter if that becomes a problem.
 - SQLite needs a persistent disk, as does `public/media`. The simplest fix is a host
   that gives you one (Railway, Fly, any VPS). Going serverless does **not** require
   Postgres: the adapter is libsql, so pointing `DATABASE_URI` at a hosted
@@ -112,4 +120,6 @@ Not set up yet. The short version — `CLAUDE.md` has the full reasoning:
 
 ## Not built yet
 
-Payment integration, contact form, analytics, sitemap/SEO, image CDN, draft previews.
+Payment integration, contact form, analytics, image CDN, draft previews.
+
+`/sitemap.xml` and `/robots.txt` are generated from the CMS — see `src/app/sitemap.ts`.

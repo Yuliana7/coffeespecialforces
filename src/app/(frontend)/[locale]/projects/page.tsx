@@ -1,35 +1,41 @@
-import { notFound } from 'next/navigation'
+import { notFound } from "next/navigation";
 
-import { Container } from '../../../../components/Container'
-import { ProjectCard } from '../../../../components/ProjectCard'
-import { SectionHeading } from '../../../../components/SectionHeading'
-import { getDictionary } from '../../../../lib/dictionary'
-import { isLocale } from '../../../../lib/locales'
-import { getPayloadClient } from '../../../../lib/payload'
+import { Container } from "@/components/Container";
+import { ProjectCard } from "@/components/ProjectCard";
+import { SectionHeading } from "@/components/SectionHeading";
+import { getDictionary } from "@/lib/dictionary";
+import { isLocale } from "@/lib/locales";
+import { getPayloadClient } from "@/lib/payload";
 
-export default async function ProjectsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale: raw } = await params
-  if (!isLocale(raw)) notFound()
-  const locale = raw
-  const t = getDictionary(locale)
+export default async function ProjectsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: raw } = await params;
+  if (!isLocale(raw)) notFound();
+  const locale = raw;
+  const t = getDictionary(locale);
 
-  const payload = await getPayloadClient()
+  const payload = await getPayloadClient();
   const { docs } = await payload.find({
-    collection: 'projects',
+    collection: "projects",
     locale,
     depth: 1,
     limit: 200,
-    sort: ['-featured', '-startDate'],
-  })
+    sort: ["-featured", "-startDate"],
+  });
 
-  const active = docs.filter((project) => project.status === 'active')
-  const completed = docs.filter((project) => project.status === 'completed')
+  const active = docs.filter((project) => project.status === "active");
+  const completed = docs.filter((project) => project.status === "completed");
 
   return (
     <Container className="py-12">
       <h1 className="mb-10 text-4xl uppercase sm:text-5xl">{t.nav_projects}</h1>
 
-      {docs.length === 0 ? <p className="text-ink-muted">{t.noProjects}</p> : null}
+      {docs.length === 0 ? (
+        <p className="text-ink-muted">{t.noProjects}</p>
+      ) : null}
 
       {active.length > 0 ? (
         <section className="mb-16">
@@ -53,5 +59,5 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
         </section>
       ) : null}
     </Container>
-  )
+  );
 }

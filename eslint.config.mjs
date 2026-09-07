@@ -1,5 +1,5 @@
-import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
-import nextTypeScript from 'eslint-config-next/typescript'
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypeScript from "eslint-config-next/typescript";
 
 /*
  * eslint-config-next 16 ships native flat configs, so the FlatCompat shim the
@@ -10,26 +10,26 @@ const eslintConfig = [
   ...nextTypeScript,
   {
     rules: {
-      '@typescript-eslint/ban-ts-comment': 'warn',
-      '@typescript-eslint/no-empty-object-type': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
+      "@typescript-eslint/ban-ts-comment": "warn",
+      "@typescript-eslint/no-empty-object-type": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
         {
-          vars: 'all',
-          args: 'after-used',
+          vars: "all",
+          args: "after-used",
           ignoreRestSiblings: false,
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          destructuredArrayIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^(_|ignore)',
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^(_|ignore)",
         },
       ],
     },
   },
   {
-    ignores: ['.next/', 'src/payload-types.ts', 'src/app/(payload)/'],
+    ignores: [".next/", "src/payload-types.ts", "src/app/(payload)/"],
   },
-]
+];
 
-export default eslintConfig
+export default eslintConfig;

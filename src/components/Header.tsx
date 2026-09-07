@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { useState } from 'react'
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
-import { getDictionary } from '../lib/dictionary'
-import type { Locale } from '../lib/locales'
-import { LocaleSwitcher } from './LocaleSwitcher'
+import { getDictionary } from "@/lib/dictionary";
+import type { Locale } from "@/lib/locales";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 
-export type NavItem = { href: string; label: string }
+export type NavItem = { href: string; label: string };
 
 export const Header = ({
   locale,
@@ -16,13 +16,13 @@ export const Header = ({
   logoUrl,
   nav,
 }: {
-  locale: Locale
-  siteName: string
-  logoUrl: string
-  nav: NavItem[]
+  locale: Locale;
+  siteName: string;
+  logoUrl: string;
+  nav: NavItem[];
 }) => {
-  const t = getDictionary(locale)
-  const [open, setOpen] = useState(false)
+  const t = getDictionary(locale);
+  const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-paper/95 backdrop-blur">
@@ -45,7 +45,10 @@ export const Header = ({
           </span>
         </Link>
 
-        <nav className="ml-auto hidden items-center gap-6 lg:flex" aria-label={t.menu}>
+        <nav
+          className="ml-auto hidden items-center gap-6 lg:flex"
+          aria-label={t.menu}
+        >
           {nav.map((item) => (
             <Link
               key={item.href}
@@ -73,9 +76,15 @@ export const Header = ({
             className="rounded border border-line p-2 lg:hidden"
           >
             <span className="sr-only">{t.menu}</span>
-            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden focusable="false">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              aria-hidden
+              focusable="false"
+            >
               <path
-                d={open ? 'M3 3l12 12M15 3L3 15' : 'M1 4h16M1 9h16M1 14h16'}
+                d={open ? "M3 3l12 12M15 3L3 15" : "M1 4h16M1 9h16M1 14h16"}
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
@@ -104,5 +113,5 @@ export const Header = ({
         </nav>
       ) : null}
     </header>
-  )
-}
+  );
+};

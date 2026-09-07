@@ -1,6 +1,6 @@
-import { getDictionary } from '../lib/dictionary'
-import type { Locale } from '../lib/locales'
-import type { Donate } from '../payload-types'
+import { getDictionary } from "@/lib/dictionary";
+import type { Locale } from "@/lib/locales";
+import type { Donate } from "@/payload-types";
 
 /**
  * The one place payment details are rendered. Used by /donate and by every
@@ -11,13 +11,13 @@ export const DonateBlock = ({
   locale,
   compact = false,
 }: {
-  donate: Donate
-  locale: Locale
-  compact?: boolean
+  donate: Donate;
+  locale: Locale;
+  compact?: boolean;
 }) => {
-  const t = getDictionary(locale)
-  const methods = donate.methods ?? []
-  const hasBank = Boolean(donate.iban || donate.recipient)
+  const t = getDictionary(locale);
+  const methods = donate.methods ?? [];
+  const hasBank = Boolean(donate.iban || donate.recipient);
 
   return (
     <div className="rounded-lg border border-line bg-surface p-6">
@@ -79,7 +79,9 @@ export const DonateBlock = ({
             ) : null}
             {donate.paymentPurpose ? (
               <>
-                <dt className="font-semibold text-ink-muted">{t.paymentPurpose}</dt>
+                <dt className="font-semibold text-ink-muted">
+                  {t.paymentPurpose}
+                </dt>
                 <dd>{donate.paymentPurpose}</dd>
               </>
             ) : null}
@@ -87,5 +89,5 @@ export const DonateBlock = ({
         </div>
       ) : null}
     </div>
-  )
-}
+  );
+};

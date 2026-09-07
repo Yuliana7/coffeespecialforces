@@ -1,57 +1,61 @@
-import type { Metadata } from 'next'
-import Image from 'next/image'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
-import { Container } from '../../../../../components/Container'
-import { EventCard } from '../../../../../components/EventCard'
-import { SectionHeading } from '../../../../../components/SectionHeading'
-import { getDictionary } from '../../../../../lib/dictionary'
-import { isLocale } from '../../../../../lib/locales'
-import { mediaAlt, mediaUrl } from '../../../../../lib/media'
-import { getPayloadClient } from '../../../../../lib/payload'
+import { Container } from "@/components/Container";
+import { EventCard } from "@/components/EventCard";
+import { SectionHeading } from "@/components/SectionHeading";
+import { getDictionary } from "@/lib/dictionary";
+import { isLocale } from "@/lib/locales";
+import { mediaAlt, mediaUrl } from "@/lib/media";
+import { getPayloadClient } from "@/lib/payload";
 
-type Params = { params: Promise<{ locale: string; slug: string }> }
+type Params = { params: Promise<{ locale: string; slug: string }> };
 
-const findArea = async (locale: 'uk' | 'en', slug: string) => {
-  const payload = await getPayloadClient()
+const findArea = async (locale: "uk" | "en", slug: string) => {
+  const payload = await getPayloadClient();
   const { docs } = await payload.find({
-    collection: 'work-areas',
+    collection: "work-areas",
     locale,
     depth: 1,
     limit: 1,
     where: { slug: { equals: slug } },
-  })
-  return docs[0] ?? null
-}
+  });
+  return docs[0] ?? null;
+};
 
-export const generateMetadata = async ({ params }: Params): Promise<Metadata> => {
-  const { locale, slug } = await params
-  if (!isLocale(locale)) return {}
-  const area = await findArea(locale, slug)
-  return area ? { title: area.title, description: area.description ?? undefined } : {}
-}
+export const generateMetadata = async ({
+  params,
+}: Params): Promise<Metadata> => {
+  const { locale, slug } = await params;
+  if (!isLocale(locale)) return {};
+  const area = await findArea(locale, slug);
+  return area
+    ? { title: area.title, description: area.description ?? undefined }
+    : {};
+};
 
 export default async function WorkAreaPage({ params }: Params) {
-  const { locale: raw, slug } = await params
-  if (!isLocale(raw)) notFound()
-  const locale = raw
-  const t = getDictionary(locale)
+  const { locale: raw, slug } = await params;
+  if (!isLocale(raw)) notFound();
+  const locale = raw;
+  const t = getDictionary(locale);
 
-  const area = await findArea(locale, slug)
-  if (!area) notFound()
+  const area = await findArea(locale, slug);
+  if (!area) notFound();
 
-  const payload = await getPayloadClient()
+  const payload = await getPayloadClient();
   const events = await payload.find({
-    collection: 'events',
+    collection: "events",
     locale,
     depth: 1,
     limit: 200,
-    sort: '-date',
+    sort: "-date",
     where: { workArea: { equals: area.id } },
-  })
+  });
 
-  const image = mediaUrl(area.image, 'hero')
+  const image = mediaUrl(area.image, "hero");
 
   return (
     <div className="py-12">
@@ -66,7 +70,9 @@ export default async function WorkAreaPage({ params }: Params) {
           {area.title}
         </h1>
         {area.description ? (
-          <p className="mt-4 max-w-2xl text-lg text-ink-muted">{area.description}</p>
+          <p className="mt-4 max-w-2xl text-lg text-ink-muted">
+            {area.description}
+          </p>
         ) : null}
       </Container>
 
@@ -98,5 +104,5 @@ export default async function WorkAreaPage({ params }: Params) {
         )}
       </Container>
     </div>
-  )
+  );
 }

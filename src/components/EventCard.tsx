@@ -1,19 +1,28 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import Image from "next/image";
+import Link from "next/link";
 
-import { formatDate } from '../lib/format'
-import type { Locale } from '../lib/locales'
-import { mediaAlt, mediaUrl } from '../lib/media'
-import type { Event } from '../payload-types'
+import { formatDate } from "@/lib/format";
+import type { Locale } from "@/lib/locales";
+import { mediaAlt, mediaUrl } from "@/lib/media";
+import type { Event } from "@/payload-types";
 
-export const EventCard = ({ event, locale }: { event: Event; locale: Locale }) => {
-  const cover = mediaUrl(event.coverImage, 'card')
-  const href = `/${locale}/events/${event.slug}`
+export const EventCard = ({
+  event,
+  locale,
+}: {
+  event: Event;
+  locale: Locale;
+}) => {
+  const cover = mediaUrl(event.coverImage, "card");
+  const href = `/${locale}/events/${event.slug}`;
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-lg border border-line bg-surface transition-shadow hover:shadow-lg">
       {cover ? (
-        <Link href={href} className="relative block aspect-[3/2] overflow-hidden bg-line">
+        <Link
+          href={href}
+          className="relative block aspect-[3/2] overflow-hidden bg-line"
+        >
           <Image
             src={cover}
             alt={mediaAlt(event.coverImage, event.title)}
@@ -24,7 +33,10 @@ export const EventCard = ({ event, locale }: { event: Event; locale: Locale }) =
         </Link>
       ) : null}
       <div className="flex flex-1 flex-col gap-2 p-5">
-        <time dateTime={event.date} className="text-xs font-bold uppercase tracking-wide text-blue">
+        <time
+          dateTime={event.date}
+          className="text-xs font-bold uppercase tracking-wide text-blue"
+        >
           {formatDate(event.date, locale)}
         </time>
         <h3 className="text-lg leading-tight">
@@ -37,20 +49,31 @@ export const EventCard = ({ event, locale }: { event: Event; locale: Locale }) =
         ) : null}
       </div>
     </article>
-  )
-}
+  );
+};
 
 /** Compact one-line variant used to list an area's latest events. */
-export const EventRow = ({ event, locale }: { event: Event; locale: Locale }) => (
+export const EventRow = ({
+  event,
+  locale,
+}: {
+  event: Event;
+  locale: Locale;
+}) => (
   <li>
     <Link
       href={`/${locale}/events/${event.slug}`}
       className="group flex flex-col gap-0.5 border-l-2 border-line py-1.5 pl-3 transition-colors hover:border-gold"
     >
-      <time dateTime={event.date} className="text-xs font-semibold uppercase text-ink-muted">
+      <time
+        dateTime={event.date}
+        className="text-xs font-semibold uppercase text-ink-muted"
+      >
         {formatDate(event.date, locale)}
       </time>
-      <span className="text-sm font-medium leading-snug group-hover:text-blue">{event.title}</span>
+      <span className="text-sm font-medium leading-snug group-hover:text-blue">
+        {event.title}
+      </span>
     </Link>
   </li>
-)
+);

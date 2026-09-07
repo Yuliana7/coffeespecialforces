@@ -5,4 +5,4 @@ allowBuilds:
   esbuild: true
   unrs-resolver: true
   sharp: true
-  '@tailwindcss/oxide': true
+  "@tailwindcss/oxide": true

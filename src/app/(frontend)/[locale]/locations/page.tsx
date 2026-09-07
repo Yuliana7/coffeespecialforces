@@ -1,28 +1,39 @@
-import Image from 'next/image'
-import { notFound } from 'next/navigation'
+import Image from "next/image";
+import { notFound } from "next/navigation";
 
-import { Container } from '../../../../components/Container'
-import { getDictionary } from '../../../../lib/dictionary'
-import { isLocale } from '../../../../lib/locales'
-import { asMediaList } from '../../../../lib/media'
-import { getPayloadClient } from '../../../../lib/payload'
+import { Container } from "@/components/Container";
+import { getDictionary } from "@/lib/dictionary";
+import { isLocale } from "@/lib/locales";
+import { asMediaList } from "@/lib/media";
+import { getPayloadClient } from "@/lib/payload";
 
-export default async function LocationsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale: raw } = await params
-  if (!isLocale(raw)) notFound()
-  const locale = raw
-  const t = getDictionary(locale)
+export default async function LocationsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: raw } = await params;
+  if (!isLocale(raw)) notFound();
+  const locale = raw;
+  const t = getDictionary(locale);
 
-  const payload = await getPayloadClient()
-  const { docs } = await payload.find({ collection: 'locations', locale, depth: 1, limit: 50 })
+  const payload = await getPayloadClient();
+  const { docs } = await payload.find({
+    collection: "locations",
+    locale,
+    depth: 1,
+    limit: 50,
+  });
 
   return (
     <Container className="py-12">
-      <h1 className="mb-10 text-4xl uppercase sm:text-5xl">{t.nav_locations}</h1>
+      <h1 className="mb-10 text-4xl uppercase sm:text-5xl">
+        {t.nav_locations}
+      </h1>
 
       <div className="space-y-12">
         {docs.map((location) => {
-          const photos = asMediaList(location.photos)
+          const photos = asMediaList(location.photos);
 
           return (
             <section key={location.id} className="grid gap-8 lg:grid-cols-2">
@@ -46,7 +57,9 @@ export default async function LocationsPage({ params }: { params: Promise<{ loca
                       <dt className="font-bold uppercase tracking-wider text-ink-muted">
                         {t.openingHours}
                       </dt>
-                      <dd className="mt-1 whitespace-pre-line">{location.openingHours}</dd>
+                      <dd className="mt-1 whitespace-pre-line">
+                        {location.openingHours}
+                      </dd>
                     </div>
                   ) : null}
                   {location.phone ? (
@@ -55,7 +68,10 @@ export default async function LocationsPage({ params }: { params: Promise<{ loca
                         {t.phone}
                       </dt>
                       <dd className="mt-1">
-                        <a href={`tel:${location.phone}`} className="text-blue hover:underline">
+                        <a
+                          href={`tel:${location.phone}`}
+                          className="text-blue hover:underline"
+                        >
                           {location.phone}
                         </a>
                       </dd>
@@ -83,8 +99,8 @@ export default async function LocationsPage({ params }: { params: Promise<{ loca
                       className="relative aspect-square overflow-hidden rounded-lg bg-line"
                     >
                       <Image
-                        src={photo.sizes?.card?.url ?? photo.url ?? ''}
-                        alt={photo.alt ?? ''}
+                        src={photo.sizes?.card?.url ?? photo.url ?? ""}
+                        alt={photo.alt ?? ""}
                         fill
                         sizes="(max-width: 768px) 50vw, 25vw"
                         className="object-cover"
@@ -94,9 +110,9 @@ export default async function LocationsPage({ params }: { params: Promise<{ loca
                 </div>
               ) : null}
             </section>
-          )
+          );
         })}
       </div>
     </Container>
-  )
+  );
 }

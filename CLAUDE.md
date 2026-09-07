@@ -60,6 +60,45 @@ Next 16's `cacheComponents: true` would flip the default (uncached IO becomes
 dynamic, making the export unnecessary), but invalidation would _still_ be manual
 via `revalidateTag`. It is not enabled in Payload's 3.88 template; leave it off.
 
+### Rich text does not link to other documents out of the box
+
+Two separate holes in Payload's default JSX converters, both silent:
+
+- `defaultJSXConverters` builds its link converter as `LinkJSXConverter({})` — with
+  no `internalDocToHref`. A link to another document therefore cannot become a URL
+  and renders `href="#"`, with an error only on the server console.
+- There is **no `relationship` converter at all**. The editor's Relationship node
+  renders _nothing_ — no element, no warning, no gap in the markup to notice.
+
+`src/components/RichText.tsx` supplies both. Its `COLLECTION_PATHS` map is the
+single place a collection is turned into a frontend path, so a new collection with a
+detail page needs one line added there — and a matching entry in
+`LINKABLE_COLLECTIONS` in `src/payload.config.ts`, which controls what the editor's
+link picker offers.
+
+`internalDocToHref` is **synchronous**, so the referenced document must already be
+populated: query rich text with `depth >= 1`. At `depth: 0` the node holds a bare
+id, and `docHref` falls back to the collection listing rather than a dead link.
+
+### Admin login is by username, and changing that on an existing database hurts
+
+`src/collections/Users.ts` sets `loginWithUsername` with `allowEmailLogin: false`
+and `requireEmail: false`, because no email adapter is configured — Payload's
+password-reset and verification flows have nothing to send with, so asking for an
+address would imply a recovery route that does not exist.
+
+Switching an auth collection between email and username **adds a NOT NULL column**.
+On a database that already has users, the schema push stops with a data-loss warning
+and waits for a `y/N` answer, which looks like a hang in a non-interactive shell.
+Either backfill the column before flipping the setting, or write a migration.
+
+### `payload run` scripts need top-level await
+
+The CLI imports the file and exits as soon as the import settles. A script that
+calls `main()` without awaiting it at the top level exits **silently with code 0**
+before any of the work runs — no output, no error. `scripts/seed.ts` ends with a
+bare `await seed()` for exactly this reason.
+
 ### Writing a second locale duplicates array rows unless you pass row ids
 
 Array fields (`stats`, `methods`, `reports`, …) are shared between locales — only the
@@ -129,6 +168,14 @@ databases:
 
 With both done there is no volume, and replicas become possible.
 
+### The first admin account is a race
+
+Payload shows a "create first user" screen to whoever reaches `/admin` while the
+users table is empty — there is no invite step. On a fresh production database that
+is open to anyone who finds the URL first. Create the account as part of the deploy
+(the seed script does it from `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD`), or at least
+before the URL is shared.
+
 ### Preview/PR deploys get their own database, never the real one
 
 Railway's PR environments copy _configuration_, not data, so a preview comes up with
@@ -166,6 +213,24 @@ Railway has no CDN of its own, so this is the way to get one.
   the desired behaviour: editors expect a publish to show up immediately. Cache
   media aggressively, not pages.
 
+## Upgrading Payload
+
+`payload` and every `@payloadcms/*` package must sit on the **exact same version** —
+Payload checks this at startup (`checkPayloadDependencies.js`) and refuses to boot on
+a mismatch, so they move as one unit:
+
+```bash
+pnpm up payload '@payloadcms/*' --latest
+pnpm generate:types        # rewrites src/payload-types.ts — commit it
+pnpm generate:importmap    # rewrites the admin import map
+```
+
+Then restart `pnpm dev` (the config is read once at start) and re-run `pnpm build`.
+If the upgrade changed the schema, add a migration with `pnpm payload migrate:create`
+before deploying — development auto-push will hide the need for it locally.
+
+Read the release notes for the range you skipped; minor bumps have no codemods.
+
 ## Conventions
 
 - Read content with the **Local API** (`getPayloadClient()` from `src/lib/payload.ts`)
@@ -178,6 +243,15 @@ Railway has no CDN of its own, so this is the way to get one.
 - **Don't compose Ukrainian UI strings from fragments.** Ukrainian inflects, so
   "Назад до" + "Проєкти" produces the wrong case. Write each full phrase as its own
   key in `src/lib/dictionary.ts` (see `backToProjects`).
+- Import across directories with the `@/` alias (`@/lib/format`, `@/components/Card`),
+  not long `../../../` chains. Siblings stay relative.
+- Formatting is **Prettier's defaults** — there is deliberately no `.prettierrc`.
+  Run `pnpm exec prettier --write .` (not `pnpx`, which downloads a different
+  Prettier instead of the project's). `.prettierignore` covers the generated files
+  that would otherwise churn on every regeneration.
+- `/sitemap.xml` and `/robots.txt` come from `src/app/sitemap.ts` and
+  `src/app/robots.ts`. Both must live at the **app root** — inside a route group
+  `robots.ts` is silently shadowed by the `[locale]` segment and 404s.
 - Keep UI chrome strings in `src/lib/dictionary.ts` and everything an editor might
   reword in Payload. There is deliberately no i18n library.
 

@@ -1,6 +1,6 @@
-import { formatMoney, progressPercent } from '../lib/format'
-import { getDictionary } from '../lib/dictionary'
-import type { Locale } from '../lib/locales'
+import { formatMoney, progressPercent } from "@/lib/format";
+import { getDictionary } from "@/lib/dictionary";
+import type { Locale } from "@/lib/locales";
 
 export const ProgressBar = ({
   raised,
@@ -8,24 +8,27 @@ export const ProgressBar = ({
   currency,
   locale,
 }: {
-  raised?: number | null
-  goal?: number | null
-  currency?: string | null
-  locale: Locale
+  raised?: number | null;
+  goal?: number | null;
+  currency?: string | null;
+  locale: Locale;
 }) => {
   // No goal set means this project isn't collecting money — show nothing.
-  if (!goal || goal <= 0) return null
+  if (!goal || goal <= 0) return null;
 
-  const t = getDictionary(locale)
-  const raisedAmount = raised ?? 0
-  const percent = progressPercent(raisedAmount, goal)
-  const code = currency || 'UAH'
+  const t = getDictionary(locale);
+  const raisedAmount = raised ?? 0;
+  const percent = progressPercent(raisedAmount, goal);
+  const code = currency || "UAH";
 
   return (
     <div>
       <div className="mb-2 flex items-baseline justify-between gap-3 text-sm">
         <span className="font-semibold">
-          {t.raised} <span className="text-blue">{formatMoney(raisedAmount, code, locale)}</span>
+          {t.raised}{" "}
+          <span className="text-blue">
+            {formatMoney(raisedAmount, code, locale)}
+          </span>
         </span>
         <span className="text-ink-muted">
           {t.goal} {formatMoney(goal, code, locale)}
@@ -39,9 +42,14 @@ export const ProgressBar = ({
         aria-valuemax={100}
         aria-label={`${t.raised}: ${percent}%`}
       >
-        <div className="h-full rounded-full bg-gold transition-all" style={{ width: `${percent}%` }} />
+        <div
+          className="h-full rounded-full bg-gold transition-all"
+          style={{ width: `${percent}%` }}
+        />
       </div>
-      <div className="mt-1 text-right text-xs font-semibold text-ink-muted">{percent}%</div>
+      <div className="mt-1 text-right text-xs font-semibold text-ink-muted">
+        {percent}%
+      </div>
     </div>
-  )
-}
+  );
+};

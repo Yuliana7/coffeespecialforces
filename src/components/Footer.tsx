@@ -1,22 +1,22 @@
-import Link from 'next/link'
+import Link from "next/link";
 
-import { getDictionary } from '../lib/dictionary'
-import type { Locale } from '../lib/locales'
-import type { SiteSetting } from '../payload-types'
-import { Container } from './Container'
-import type { NavItem } from './Header'
+import { getDictionary } from "@/lib/dictionary";
+import type { Locale } from "@/lib/locales";
+import type { SiteSetting } from "@/payload-types";
+import { Container } from "./Container";
+import type { NavItem } from "./Header";
 
 export const Footer = ({
   locale,
   settings,
   nav,
 }: {
-  locale: Locale
-  settings: SiteSetting
-  nav: NavItem[]
+  locale: Locale;
+  settings: SiteSetting;
+  nav: NavItem[];
 }) => {
-  const t = getDictionary(locale)
-  const socials = settings.socialLinks ?? []
+  const t = getDictionary(locale);
+  const socials = settings.socialLinks ?? [];
 
   return (
     <footer className="mt-24 bg-olive-deep text-white">
@@ -25,7 +25,9 @@ export const Footer = ({
           <div className="lg:col-span-2">
             <h2 className="text-2xl uppercase">{settings.siteName}</h2>
             {settings.tagline ? (
-              <p className="mt-2 max-w-sm text-sm text-white/70">{settings.tagline}</p>
+              <p className="mt-2 max-w-sm text-sm text-white/70">
+                {settings.tagline}
+              </p>
             ) : null}
             <Link
               href={`/${locale}/donate`}
@@ -42,7 +44,10 @@ export const Footer = ({
             <ul className="space-y-2 text-sm">
               {nav.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-white/80 hover:text-gold">
+                  <Link
+                    href={item.href}
+                    className="text-white/80 hover:text-gold"
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -57,7 +62,10 @@ export const Footer = ({
             <ul className="space-y-2 text-sm">
               {settings.contactEmail ? (
                 <li>
-                  <a href={`mailto:${settings.contactEmail}`} className="text-white/80 hover:text-gold">
+                  <a
+                    href={`mailto:${settings.contactEmail}`}
+                    className="text-white/80 hover:text-gold"
+                  >
                     {settings.contactEmail}
                   </a>
                 </li>
@@ -79,12 +87,14 @@ export const Footer = ({
         </div>
 
         <div className="mt-12 border-t border-white/15 pt-6 text-xs text-white/50">
-          {settings.footerText ? <p className="mb-1">{settings.footerText}</p> : null}
+          {settings.footerText ? (
+            <p className="mb-1">{settings.footerText}</p>
+          ) : null}
           <p>
             © {new Date().getFullYear()} {settings.siteName}
           </p>
         </div>
       </Container>
     </footer>
-  )
-}
+  );
+};
