@@ -1,7 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { richTextFrom } from './lib/lexical'
+import { richTextFrom } from '../src/lib/lexical'
 
 /**
  * Fills an empty database with realistic bilingual content so the site and the
@@ -83,8 +83,7 @@ const seed = async () => {
         title: 'Кавові збори',
         slug: 'coffee-fundraisers',
         order: 1,
-        description:
-          'Тематичні дні у кав’ярні, коли весь виторг спрямовується на конкретний збір.',
+        description: 'Тематичні дні у кав’ярні, коли весь виторг спрямовується на конкретний збір.',
       },
       en: {
         title: 'Coffee fundraisers',
@@ -182,8 +181,7 @@ const seed = async () => {
       en: {
         title: 'Individual first aid kits',
         status: 'active',
-        summary:
-          'One hundred IFAKs for the units training in our coffee shop.',
+        summary: 'One hundred IFAKs for the units training in our coffee shop.',
         content: richTextFrom([
           'We teach pre-hospital care — but the skill saves nobody without a kit. So every graduate of our course should leave with a full set.',
           'One kit costs around 2,400 UAH: tourniquet, chest seal, bandage, shears and a thermal blanket.',
@@ -210,7 +208,8 @@ const seed = async () => {
       en: {
         title: 'Generator for a military hospital',
         status: 'completed',
-        summary: 'Closed in 51 days. The generator has been running in the operating theatre since March.',
+        summary:
+          'Closed in 51 days. The generator has been running in the operating theatre since March.',
         content: richTextFrom([
           'Campaign closed. A 30 kW diesel generator has been installed and wired into the surgical block.',
           'Thank you to everyone who drank coffee for this.',
@@ -339,9 +338,7 @@ const seed = async () => {
         workArea: areas['coffee-fundraisers'],
         location: kyiv.id,
         summary: 'Рідкісні лоти зерна та підписані турки. Зібрано 74 000 грн.',
-        content: richTextFrom([
-          'Аукціон завершено. Виручені кошти пішли на аптечки.',
-        ]),
+        content: richTextFrom(['Аукціон завершено. Виручені кошти пішли на аптечки.']),
       },
       en: {
         title: 'Charity coffee auction',

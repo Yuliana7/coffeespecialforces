@@ -7,7 +7,7 @@ Bilingual (Ukrainian default, English second) and edited entirely through a buil
 admin panel, so no code changes are needed to publish content.
 
 Built with Payload CMS 3, Next.js 16, React 19, Tailwind 4 and SQLite. Payload runs
-*inside* the Next app — one project, one command, one database.
+_inside_ the Next app — one project, one command, one database.
 
 ## Requirements
 
@@ -27,7 +27,7 @@ pnpm dev
 
 Generate the secret with `openssl rand -base64 32`.
 
-- Site — <http://localhost:3000>  (redirects to `/uk`)
+- Site — <http://localhost:3000> (redirects to `/uk`)
 - Admin — <http://localhost:3000/admin>
 
 `pnpm seed` signs you in with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` from `.env`
@@ -44,22 +44,22 @@ Uploaded images and PDFs go to `public/media`, also git-ignored.
 
 ## Scripts
 
-| Command | What it does |
-| --- | --- |
-| `pnpm dev` | Run site + admin at localhost:3000 |
-| `pnpm build` / `pnpm start` | Production build and server |
-| `pnpm seed` | Create admin user and demo content (idempotent) |
-| `pnpm generate:types` | Regenerate `src/payload-types.ts` after schema edits |
-| `pnpm lint` | ESLint |
+| Command                     | What it does                                         |
+| --------------------------- | ---------------------------------------------------- |
+| `pnpm dev`                  | Run site + admin at localhost:3000                   |
+| `pnpm build` / `pnpm start` | Production build and server                          |
+| `pnpm seed`                 | Create admin user and demo content (idempotent)      |
+| `pnpm generate:types`       | Regenerate `src/payload-types.ts` after schema edits |
+| `pnpm lint`                 | ESLint                                               |
 
 ## Structure
 
 ```
+scripts/seed.ts               Demo content in both languages
 src/
   payload.config.ts     Collections, globals, locales, database
   collections/          Projects, Events, WorkAreas, Locations, Media, Users
   globals/              Home, Foundation, Donate, SiteSettings (single-record pages)
-  seed.ts               Demo content in both languages
   app/
     (payload)/          Admin UI and REST/GraphQL API — generated, leave alone
     (frontend)/[locale] The public site

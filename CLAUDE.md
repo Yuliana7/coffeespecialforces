@@ -46,7 +46,7 @@ appear on the live site until the next deploy. Don't remove it.
 It is tempting to assume Payload handles this, since it runs in the same process.
 It does not: there is not a single `revalidatePath`/`revalidateTag` reference in
 `payload` or `@payloadcms/next`. Payload is host-agnostic and has no idea which
-routes render which documents. Payload's *website template* wires it up by hand, in
+routes render which documents. Payload's _website template_ wires it up by hand, in
 `templates/website/src/collections/Pages/hooks/revalidatePage.ts`, calling
 `revalidatePath` from an `afterChange` hook — that is the pattern to copy if caching
 is ever wanted here.
@@ -57,14 +57,14 @@ reading `.next/prerender-manifest.json`: it should list only `/_not-found` and
 `/_global-error`.
 
 Next 16's `cacheComponents: true` would flip the default (uncached IO becomes
-dynamic, making the export unnecessary), but invalidation would *still* be manual
+dynamic, making the export unnecessary), but invalidation would _still_ be manual
 via `revalidateTag`. It is not enabled in Payload's 3.88 template; leave it off.
 
 ### Writing a second locale duplicates array rows unless you pass row ids
 
 Array fields (`stats`, `methods`, `reports`, …) are shared between locales — only the
-fields *inside* them are translated. Writing the English pass without each row's `id`
-appends a second set of rows instead of translating the existing ones. `src/seed.ts`
+fields _inside_ them are translated. Writing the English pass without each row's `id`
+appends a second set of rows instead of translating the existing ones. `scripts/seed.ts`
 carries the ids across in `withRowIds`; do the same anywhere else that writes both
 locales.
 
@@ -105,7 +105,7 @@ CPU paying for it.
 ## Deployment & hosting
 
 Nothing is deployed yet. These constraints follow from SQLite-on-disk and are worth
-knowing *before* picking a host, because they are awkward to undo later.
+knowing _before_ picking a host, because they are awkward to undo later.
 
 ### The persistent disk means exactly one instance
 
@@ -131,7 +131,7 @@ With both done there is no volume, and replicas become possible.
 
 ### Preview/PR deploys get their own database, never the real one
 
-Railway's PR environments copy *configuration*, not data, so a preview comes up with
+Railway's PR environments copy _configuration_, not data, so a preview comes up with
 an empty volume: no content, no admin user. There is an opt-in "Copy Volume Data"
 setting that clones the base environment's volume into the PR environment — note
 that is a **copy**, not a shared database. Pointing a second deployment at the live
@@ -171,7 +171,7 @@ Railway has no CDN of its own, so this is the way to get one.
 - Read content with the **Local API** (`getPayloadClient()` from `src/lib/payload.ts`)
   directly in server components. No fetch wrappers, no HTTP round-trip.
 - Run `pnpm generate:types` after any schema change and commit `src/payload-types.ts`.
-- Upload fields come back as an id *or* a full document. Go through the helpers in
+- Upload fields come back as an id _or_ a full document. Go through the helpers in
   `src/lib/media.ts` rather than re-checking the shape at each call site.
 - Slugs are **not** localized — one document keeps one URL in both languages, which
   is what lets the language switcher swap only the first path segment.
@@ -187,6 +187,6 @@ Railway has no CDN of its own, so this is the way to get one.
   too small for a hero or favicon set. Replace it when a real asset arrives.
 - Seeded content has no images; cards omit the image frame when there's no cover.
 - SQLite + local disk uploads mean a persistent filesystem is required. Note this
-  does *not* imply Postgres if that changes: `@payloadcms/db-sqlite` talks libsql,
+  does _not_ imply Postgres if that changes: `@payloadcms/db-sqlite` talks libsql,
   so a hosted libsql/Turso URL in `DATABASE_URI` is a drop-in with the same schema.
   Uploads are the part that would actually have to move, to `@payloadcms/storage-s3`.
