@@ -112,7 +112,7 @@ export default async function EventPage({ params }: Params) {
                   className="relative aspect-[4/3] overflow-hidden rounded-lg bg-line"
                 >
                   <Image
-                    src={image.sizes?.card?.url ?? image.url ?? ""}
+                    src={mediaUrl(image, "card") ?? ""}
                     alt={image.alt ?? ""}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"

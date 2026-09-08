@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { getDictionary } from "@/lib/dictionary";
 import { isLocale } from "@/lib/locales";
-import { asMediaList } from "@/lib/media";
+import { asMediaList, mediaUrl } from "@/lib/media";
 import { getPayloadClient } from "@/lib/payload";
 
 export default async function LocationsPage({
@@ -99,7 +99,7 @@ export default async function LocationsPage({
                       className="relative aspect-square overflow-hidden rounded-lg bg-line"
                     >
                       <Image
-                        src={photo.sizes?.card?.url ?? photo.url ?? ""}
+                        src={mediaUrl(photo, "card") ?? ""}
                         alt={photo.alt ?? ""}
                         fill
                         sizes="(max-width: 768px) 50vw, 25vw"
