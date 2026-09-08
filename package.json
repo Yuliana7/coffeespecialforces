@@ -1,35 +1,49 @@
 {
   "name": "coffeespecialforces",
   "version": "0.1.0",
+  "description": "Coffee Special Forces — charity coffee shop website & CMS",
+  "license": "MIT",
   "private": true,
+  "type": "module",
   "scripts": {
+    "build": "NODE_OPTIONS=--max-old-space-size=8000 next build",
     "dev": "next dev",
-    "build": "next build",
+    "devsafe": "rm -rf .next && next dev",
     "start": "next start",
-    "lint": "next lint",
-    "prisma:generate": "prisma generate",
-    "prisma:seed": "ts-node --transpile-only prisma/seed.ts"
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "payload": "NODE_OPTIONS=--no-deprecation payload",
+    "generate:types": "NODE_OPTIONS=--no-deprecation payload generate:types",
+    "generate:importmap": "NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "seed": "NODE_OPTIONS=--no-deprecation payload run scripts/seed.ts"
   },
   "dependencies": {
-    "next": "14.0.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "@prisma/client": "4.14.0",
-    "next-auth": "4.22.1",
-    "tailwindcss": "3.4.0",
-    "clsx": "1.2.1",
-    "@aws-sdk/client-s3": "3.388.0",
-    "@aws-sdk/s3-request-presigner": "3.388.0",
-    "@tiptap/react": "2.0.0-beta.103",
-    "@tiptap/starter-kit": "2.0.0-beta.44"
+    "@payloadcms/db-sqlite": "3.88.0",
+    "@payloadcms/next": "3.88.0",
+    "@payloadcms/richtext-lexical": "3.88.0",
+    "@payloadcms/translations": "3.88.0",
+    "@payloadcms/ui": "3.88.0",
+    "graphql": "^16.8.1",
+    "next": "16.3.4",
+    "payload": "3.88.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sharp": "0.35.4"
   },
   "devDependencies": {
-    "prisma": "4.14.0",
-    "typescript": "5.1.6",
-    "postcss": "8.4.21",
-    "autoprefixer": "10.4.14",
-    "ts-node": "10.9.1",
-    "eslint": "8.41.0",
-    "eslint-config-next": "14.0.0"
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "22.19.9",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "16.3.4",
+    "prettier": "^3.4.2",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.13",
+    "typescript": "5.7.3"
+  },
+  "engines": {
+    "node": "^18.20.2 || >=20.9.0"
   }
 }

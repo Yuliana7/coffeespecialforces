@@ -1,0 +1,6 @@
+# Prettier already honours .gitignore, so node_modules/.next/*.db are covered.
+# These are tracked but generated — reformatting them only creates churn, since
+# the generator rewrites them unformatted on the next run.
+pnpm-lock.yaml
+src/payload-types.ts
+src/app/(payload)/admin/importMap.js

@@ -1,0 +1,8 @@
+# pnpm 12 blocks dependency install scripts unless listed here.
+# Payload's bundler (esbuild), the lint resolver, sharp's image pipeline and
+# Tailwind's native engine all need theirs to run.
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
+  sharp: true
+  "@tailwindcss/oxide": true
