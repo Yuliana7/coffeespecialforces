@@ -94,26 +94,71 @@ a warm off-white. All six colours are CSS variables at the top of
 
 ## Deployment
 
-Not set up yet. The short version — `CLAUDE.md` has the full reasoning:
+Configured for Railway, not yet applied. `.railway/railway.ts` is the whole
+description of the Railway environment — the service, the volume, the start
+command and the variables — and the CLI reconciles Railway to it:
+
+```bash
+railway login
+railway link                 # pick (or create) the project + environment
+railway config plan          # preview; reads only
+railway config apply         # create the service and volume
+railway variables --set PAYLOAD_SECRET="$(openssl rand -base64 32)"
+railway domain               # generate the public domain
+railway redeploy             # rebuild, so the domain is baked into the bundle
+```
+
+There is nothing to upload. Railway clones the repo, runs `pnpm build` in its own
+container and then the start command in that image; `.next` stays gitignored.
+
+**The first deploy will fail, and that is expected.** `apply` connects the GitHub
+source and Railway builds immediately — before `PAYLOAD_SECRET` exists and before
+there is a domain. Payload refuses to boot without a secret. The `redeploy` at the
+end of the list is the deploy that counts. (If `plan` rejects `preserve()` because
+the variable does not exist yet, comment that line out for the first apply and
+restore it once the variable is set.)
+
+`railway domain` (or the **Generate Domain** button) asks which port to route to
+whenever it cannot detect one from a running deployment — which is the case here,
+since the first deploy crashes before it listens. The answer is **3000**, pinned as
+`PORT` in the config.
+
+Two ordering traps in that list:
+
+- `NEXT_PUBLIC_*` is inlined by Next at **build** time, so the domain has to exist
+  before the build that ships. Generated domains are not part of the config file,
+  which is why the domain is created and then the service redeployed. Adding a
+  custom domain later needs a rebuild, not a restart.
+- The **first admin account is a race** — see below. Open `/admin` and create it
+  before the URL is shared with anyone.
+
+The rest of the reasoning is in `CLAUDE.md`:
 
 - `NEXT_PUBLIC_SERVER_URL` must exactly match the public origin, or the admin panel
   will reject every save.
 - Schema auto-push is **development only**. In production Payload expects
-  migrations, so the deploy has to run `pnpm payload migrate:create` once locally,
-  with `pnpm payload migrate` in the start command.
-- **Create the admin account as part of the deploy.** Payload shows a "create first
-  user" screen to whoever reaches `/admin` while the users table is empty — there is
-  no invite step, so on a fresh production database that is open to anyone who finds
-  the URL. Run `pnpm seed` (it reads `SEED_ADMIN_USERNAME` / `SEED_ADMIN_PASSWORD`)
-  in the deploy, or at least create the account before sharing the URL.
+  migrations, so `src/migrations` is committed and the start command runs
+  `pnpm payload migrate`. Re-run `pnpm payload migrate:create <name>` after any
+  schema change and commit the result. Migrations run in the **start** command
+  rather than a pre-deploy one, because Railway does not mount volumes for the
+  pre-deploy container — a migration there would write to a throwaway disk.
+- **Create the admin account before sharing the URL.** Payload shows a "create
+  first user" screen to whoever reaches `/admin` while the users table is empty —
+  there is no invite step, so on a fresh production database that is open to anyone
+  who finds the URL. Open `/admin` yourself as soon as the first deploy is live.
+  `pnpm seed` is _not_ the way to do this in production: `railway run` executes
+  locally against a database it cannot reach, and the script also inserts sample
+  content. It stays a development convenience.
 - Login is by **username**, not email, and no email adapter is configured — so there
   is no "forgot password" mail. A locked-out admin is reset by another admin, or from
   the CLI. Add an email adapter if that becomes a problem.
-- SQLite needs a persistent disk, as does `public/media`. The simplest fix is a host
-  that gives you one (Railway, Fly, any VPS). Going serverless does **not** require
-  Postgres: the adapter is libsql, so pointing `DATABASE_URI` at a hosted
-  libsql/Turso URL keeps the same adapter and schema. Uploads would still need to
-  move to object storage via `@payloadcms/storage-s3`.
+- SQLite needs a persistent disk, as do the uploads. Both live on one Railway
+  volume mounted at `/data`, via `DATABASE_URI` and `MEDIA_DIR`. Uploads are served
+  by Payload's own `/api/media/file/**` route, so they do not have to sit in
+  `public/`. Going serverless does **not** require Postgres: the adapter is libsql,
+  so pointing `DATABASE_URI` at a hosted libsql/Turso URL keeps the same adapter
+  and schema. Uploads would still need to move to object storage via
+  `@payloadcms/storage-s3`.
 - That disk also means **one instance only** — no replicas, and a few seconds of
   downtime on each redeploy. Fine at this scale, but it is the constraint to
   remember if the site ever needs to scale out.

@@ -3,4 +3,5 @@
 # the generator rewrites them unformatted on the next run.
 pnpm-lock.yaml
 src/payload-types.ts
+src/migrations/
 src/app/(payload)/admin/importMap.js
